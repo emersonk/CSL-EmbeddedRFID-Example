@@ -1,0 +1,14 @@
+When installing in a CSL Intelligent Fixed Reader for the first time:
+
+1) Compile the example.c:
+
+	Step 1:  Copy the directory and its content to a location in the CSL Intelligent Fixed Reader
+	Step 2:  Change directory to that location
+	Step 3:  type the command "make clean"
+	Step 4:  type the command "make"
+	
+2) After that, an execuation file with the name "example" will be created.
+
+3) You can now use this command with following syntax in that location (for example if you are running a CS463-2 FCC reader):  "./example -conf configCS463_FCC.txt"
+
+4) You can modify the configCS463_FCC.txt file and change the various EPC parameters. 

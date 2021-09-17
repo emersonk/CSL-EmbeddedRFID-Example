@@ -1,0 +1,5 @@
+libcpl.so 
+librfidtx.so
+
+Normally these 2 libraries are ALREADY in /usr/lib.  
+ONLY if you cannot find these 2 libraries in /usr/lib, then these 2 libraries should be copied to Linux OS path of /usr/lib

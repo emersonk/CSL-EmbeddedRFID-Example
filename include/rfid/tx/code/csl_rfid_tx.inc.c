@@ -1,7 +1,7 @@
+#include <ctype.h>
 
 #include "translib.h"
 #include "compat_error.h"
-
 
 #include "rfid_structs.h"
 

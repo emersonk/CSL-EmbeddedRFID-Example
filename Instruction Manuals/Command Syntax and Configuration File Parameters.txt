@@ -1,0 +1,82 @@
+
+Command Syntax: [./example -conf filename]   
+
+filename is the name of the configuration file.  Examples are included for different reader models (such as CS463, CS203X, CS468XJ, etc.), and for different countries.
+
+Inside the configuration file, here is an example: 
+
+-tag 						//Enable read tag (default : disable read tag, without this, tag would not be read)
+-loop  						//Loop forever (default : Without this [-loop], the reader run inventory for 20 seconds and close)
+-country FCC  				//Set country where the reader operates, [FCC] / [SG] / [ESTI] / [JP] (default country is FCC) See below for country table versus model code
+-freq_ch_no 0 				//Frequency channel number for -1 and -8 readers only, value ranging from 0-3 (default value is 0)
+-profile 1					//(0, 1, 2, 3; default is 1)
+-inventorymode compact		//compact   (normal and compact, default = normal) 
+-tagdelaycompactmode 0		//(0 - 30, 0 is default)
+-target 0					//0 means Flag A, 1 means Flag B
+-toggle 0					//1 means target will be toggled after all arounds have been run on current target, 0 means no toggle, default 1
+-algorithm 1,7,0,15,4  		//1 means Dynamic Q, FixedQ=[0,QValue] DynamicQ=[1,StartQ,MinQ,MaxQ,ThreadholdMultiplier], NO SPACE AFTER EACH COMMA !!!!
+-session 1   				//Session number: 0 - 3 corresponding to S0, S1, S2 and S3
+-retry 0					//retry count, only meaningful when toggle = 1
+-tagfocus 1					//Impinj tag specific feature, Flag B would not reset to Flag A until all inventory done
+-rflnagain 13				//RF LNA Gain in dB, 1, 7, 13, default 1
+-rfhighcompress 0			//High compression mode for RF LNA, must be 0 if rflnagain=13
+-iflnagain 24				//IF LNA Gain in dB, 24, 18, 12, 6, default 24
+-agcgain -6					//AGC Gain Range in dB, -12, -6, 0, +6, default -6  	
+-portn 0,enable,300,1000,65536,Disable,DynamicQ,7,Disable,2,Disable,1    //Number of lines depends on number of antenna ports on reader. CS463 has 4 lines.  Index of Antenna Port number starts from 0 !!!!   NO SPACE AFTER EACH COMMA !!!
+																		 //Antenna Port #, enable/disable,Power,DwellTime,InventoryRounds,Enable/DisableLocalPortAlgorithm,StartQLocalPort,Enable/DisableLocalPortProfile,ProfileLocalPort,Enable/DisableLocalPortFrequencyChannel,FrequencyChannelLocalPort
+
+Country/Region option:
+
+Unitied States			: FCC 
+Europe 800 MHz Band		: ETSI800
+Europe 900 MHz Band		: ETSI900
+India					: IN 
+G800					: G800
+Australia				: AU
+New Zealand				: NZ
+Brazil 1				: BR1
+Brazil 2				: BR2
+Hong Kong				: HK
+Thailand				: TH
+Singapore				: SG
+Malaysia				: MY
+South Africa 			: ZA
+Indonesia				: ID
+China					: CN / CN1 / CN2 / CN3 / CN4 / CN5 / CN6 / CN7 / CN8 / CN9 / CN10 / CN11 / CN12 
+Taiwan					: TW
+Japan					: JP
+
+
+Below are available options for reader with different order code
+
+Order code	-1		:	ETSI800, IN 
+Order code	-2		:	FCC 
+Order code  -2 AS	:	AU
+Order code  -2 NZ	:	NZ
+Order code  -2 OFCA	:	HK
+Order code  -2 RW	:	BR1, BR2, TH, SG, MY, ZA, ID  
+Order code	-4		:	TW
+Order code	-7		:	CN/CN1/CN2/CN3/CN4/CN5/CN6/CN7/CN8/CN9/CN10/CN11/CN12
+Order code	-8		:	JP
+Order code  -9		: 	ETSI900
+
+
+The Order Code is printed on the product label at the rear panel of the CSL RFID Reader.
+The format of Order Code is shown as follow:
+CS463:	CS463-N
+
+
+where N:
+N=1: 		865-868 MHz for Europe ETSI, Russia, Mid-East countries, 
+			865-867 MHz for India
+N=2:  		902-928 MHz, FCC, for USA, Canada and Mexico. Hopping frequencies locked
+N=2 AS:		920-926 MHz, Australia.  Hopping frequencies locked
+N=2 NZ: 	921.5-928 MHz, New Zealand.  Hopping frequencies locked
+N=2 OFCA: 	920-925 MHz, Hong Kong.  Hopping frequencies locked
+N=2 RW: 	920-928 MHz, Rest of the World, e.g. Philippines, Brazil, Peru, Uruguay, etc.
+N=4:		922-928 MHz, Taiwan
+N=7:		920-925 MHz, China
+N=8: 		916.7-920.9 MHz, Japan
+N=9:		915-921 MHz, Europe Upper Band
+
+

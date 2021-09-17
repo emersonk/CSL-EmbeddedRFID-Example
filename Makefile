@@ -48,6 +48,6 @@ csl_rfid_tx.o: ./include/rfid/tx/code/csl_rfid_tx.inc.c
 	$(CC) $(CFLAGS_RFID_TX) -o csl_rfid_tx.o -c ./include/rfid/tx/code/csl_rfid_tx.inc.c
 
 clean:
-	-rm *.o
+	-rm -f *.o
 	-rm example
 

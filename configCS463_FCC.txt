@@ -1,0 +1,22 @@
+ 
+   -tag
+   -loop
+   -country FCC
+   -profile 1  
+   -inventorymode compact
+   -tagdelaycompactmode 0
+   -target 0
+   -toggle 0
+   -algorithm 1,7,0,15,4
+   -session 1
+   -retry 0
+   -tagfocus 1
+   -rflnagain 13
+   -rfhighcompress 0
+   -iflnagain 24
+   -agcgain -6
+   -simpledisplay 1
+   -portn 0,enable,300,1000,65536,Disable,DynamicQ,7,Disable,2,Disable,1
+   -portn 1,disable,300,1000,65536,Disable,DynamicQ,7,Disable,2,Disable,2
+   -portn 2,disable,300,1000,65536,Disable,DynamicQ,7,Disable,2,Disable,3
+   -portn 3,disable,300,1000,65536,Disable,DynamicQ,7,Disable,2,Disable,4

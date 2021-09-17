@@ -39,8 +39,11 @@
 #define CS203DC_MACERROR_RSP		"70000500XXXXXXXX"
 
 #define CS203DC_OEMADDR_02			"7001000502000000"
+#define CS203DC_OEMADDR_8E			"700100058E000000"
+#define CS203DC_OEMADDR_8F			"700100058F000000"
 #define CS203DC_OEMADDR_A4			"70010005A4000000"
 #define CS203DC_HST_READ_OEM		"700100f003000000"
+#define CS203DC_HST_CHG_MBP			"700100f006000000"
 
 //#define CS203DC_CURRENT_PROFILE		"700100f003000000"	// rubbish define
 #define CS203DC_HST_CHG_PROFILE		"700100f019000000"
@@ -49,17 +52,23 @@
 //#define CS203DC_TCPNOTIFY_RSP		"9898989898989898"
 
 #define MAX_EPCLEN	64	// in byte, max buffer size for EPC
-#define MAX_TAGBUFLEN	50	// number of tag to be stored for duplicate elimination
+#define MAX_TAGBUFLEN	5000	// number of tag to be stored for duplicate elimination
 
 // Reader Model
 #define READER_MODEL_CS101_TEXT			"CS101"
 #define READER_MODEL_CS103_TEXT			"CS103"
+#define READER_MODEL_CS108_TEXT			"CS108"
 #define READER_MODEL_CS203_TEXT			"CS203"
+#define READER_MODEL_CS203X_TEXT		"CS203X"
+#define READER_MODEL_CS206_TEXT			"CS206"
+#define READER_MODEL_CS208_TEXT			"CS208"
 #define READER_MODEL_CS209_TEXT			"CS209"
 #define READER_MODEL_CS333_TEXT			"CS333"
 #define READER_MODEL_CS463_TEXT			"CS463"
 #define READER_MODEL_CS468_TEXT			"CS468"
 #define READER_MODEL_CS468INT_TEXT		"CS468INT"
+#define READER_MODEL_CS468X_TEXT		"CS468X"
+#define READER_MODEL_CS468XJ_TEXT		"CS468XJ"
 #define READER_MODEL_CS469_TEXT			"CS469"
 
 
@@ -179,6 +188,20 @@ typedef struct _CS203DC_Handle
 	int MinQ;
 	int StartQ;
 	int ThreadholdMultipler;
+// new parameters -- programmable
+	int inventorymode;
+	int tagdelaycompactmode;
+	int retry;
+	int tagfocus;
+	int rflnagain;
+	int rfhighcompress;
+	int iflnagain;
+	int agcgain;
+	int simpledisplay;
+//new paramters -- for local usage
+	int uTag, numTag, newTag, eTime;
+	time_t tic;
+	char configFile[50];
 // for tag filter
 	CS203DC_TagInfo tag[MAX_TAGBUFLEN]; // ring buffer like, the head is pointed by head
 	int tagbeginidx;
@@ -187,8 +210,9 @@ typedef struct _CS203DC_Handle
 	int portSequence[16];
 	int portSequenceCount;
 	int OEM_country;
-	int OEM_model;
-	
+	char OEM_countryversion[5];
+	int OEM_frequencyModification;
+	int OEM_model;	
 	unsigned int FW_version;
 	int flag_decodePacket;
 	int decodePacketBuf_offset;
