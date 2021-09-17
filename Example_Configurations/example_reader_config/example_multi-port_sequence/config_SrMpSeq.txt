@@ -1,0 +1,1 @@
+192.168.25.210 -tag -loop -country HK -power 300 -dwellTime 6000 -portconf RD1_PortConfig.txt -sequence 1

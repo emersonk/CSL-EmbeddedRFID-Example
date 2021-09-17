@@ -1,0 +1,5 @@
+#!/bin/sh
+
+#./example 192.168.25.210 -tag -loop -country ETSI -power 280 -dwellTime 5200 -portconf RD1_PortConfig.txt -sequence 1
+./example -conf config_country.txt
+

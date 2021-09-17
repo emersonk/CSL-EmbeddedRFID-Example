@@ -1,0 +1,17 @@
+PortNumber ActiveControl Power(dBm/10) Dwell(ms) InventoryRounds LocalInventory InventoryAlgorithm StartQ LocalProfile Profile LocalChannel Channel
+0           enable         300            4000       65536            Disable         DynamicQ            7      Disable         2     Disable       1
+1           disable         300            4000       65536            Disable         DynamicQ            7      Disable         2     Disable       2
+2           disable         300            500       65536            Disable         DynamicQ            7      Disable         2     Disable       3
+3           disable         300            500       65536            Disable         DynamicQ            7      Disable         2     Disable       4
+4           disable         300            500       65536            Disable         DynamicQ            7      Disable         2     Disable       5
+5           disable         300            500       65536            Disable         DynamicQ            7      Disable         2     Disable       6
+6           disable         300            500       65536            Disable         DynamicQ            7      Disable         2     Disable       7
+7           disable         300            500       65536            Disable         DynamicQ            7      Disable         2     Disable       8
+8           disable         300            4000       65536            Disable         DynamicQ            7      Disable         2     Disable       1
+9           disable         300            500       65536            Disable         DynamicQ            7      Disable         2     Disable       2
+10          disable         300            500       65536            Disable         DynamicQ            7      Disable         2     Disable       3
+11          disable         300            500       65536            Disable         DynamicQ            7      Disable         2     Disable       4
+12          disable         300            500       65536            Disable         DynamicQ            7      Disable         2     Disable       5
+13          disable         300            500       65536            Disable         DynamicQ            7      Disable         2     Disable       6
+14          disable         300            500       65536            Disable         DynamicQ            7      Disable         2     Disable       7
+15          disable         300            4000       65536            Disable         DynamicQ            7      Disable         2     Disable       8
