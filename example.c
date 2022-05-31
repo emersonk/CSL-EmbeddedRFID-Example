@@ -661,11 +661,13 @@ int CS203DC_StartInventory(CS203DC_Handle* handle)
 	
 	if(handle == NULL)
 	{
+                printf("CS203DC_StartInventory: NULL handle");
 		return -2;
 	}
 
 	if(handle->state != CS203DCSTATE_CONNECTED)
 	{
+                printf("CS203DC_StartInventory: handle->state is not CS203DCSTATE_CONNECTED");
 		return -2;
 	}
 
@@ -2458,9 +2460,15 @@ int RFID_CheckOEM (CS203DC_Handle* handle)
 	
 	
 	if(handle == NULL)
+        {
+                printf("RFID_CheckOEM: NULL handle");
 		return -1;
+        }
 	if(handle->state != CS203DCSTATE_CONNECTED)
-		return -3;	
+        {
+                printf("RFID_CheckOEM: handle->state is not CS203DCSTATE_CONNECTED"); 
+		return -3;
+        }
 
 /*	
 	// For test only
@@ -2498,6 +2506,7 @@ int RFID_CheckOEM (CS203DC_Handle* handle)
 		}
 		ClearRecvBuffer(handle);			// Clear Command-End Packet
 	}
+        printf("RFID_CheckOEM: rfid_reader_read/write error: ret = %i", ret);
 	// read OEM Country Version from reader
 	if(ret == 0)
 	{
@@ -2656,7 +2665,7 @@ int RFID_CheckOEM (CS203DC_Handle* handle)
 		printf("\n");
 		switch(handle->OEM_country)
 		{
-			case 1:
+			case 1:      
 			case 2:
 			case 4:
 			case 6:
@@ -2674,8 +2683,31 @@ int RFID_CheckOEM (CS203DC_Handle* handle)
 				{
 					if(handle->country == t_list[i])
 					{
-						printf (" %s : Set Frequency Table for %s \n", handle->target_reader, CountryTxt[handle->country]);
-						SetFreq_Table (handle, countryFreqTable[handle->country].freq_table, countryFreqTable[handle->country].freq_count);
+		printf (" %s : Set Frequency Table for %s \n", handle->target_reader, CountryTxt[handle->country]);
+	if (handle->OEM_country == 1 || handle->OEM_country == 8)
+	{
+		char sPacketCommand[50];
+		int i = 0, iFixed = handle->iConf_channel;
+		unsigned int t_freqVal;
+	
+		if (iFixed < countryFreqTable[handle->country].freq_count)
+		{
+			sprintf(sPacketCommand, "7001010C%02X000000", i); // Select Channel
+			_sendintelcmd(handle, sPacketCommand);
+
+			// printf("freqTable %d, %08X \n", i, freqTable[i]);
+			t_freqVal = swapMSBLSB32bit(countryFreqTable[handle->country].freq_table[iFixed]);
+			// printf("t_freqVal %08X \n", t_freqVal);
+		
+			sprintf(sPacketCommand, "7001030C%08X", t_freqVal); 	// Set Freq
+			_sendintelcmd(handle, sPacketCommand);
+
+			sprintf(sPacketCommand, "7001020C01000000"); // Enable Channel
+			_sendintelcmd(handle, sPacketCommand);
+		}
+		
+	}
+	else	SetFreq_Table (handle, countryFreqTable[handle->country].freq_table, countryFreqTable[handle->country].freq_count);
 						break;
 					}
 				}
@@ -4211,6 +4243,7 @@ void *run (void *fd)
 	ret = RFID_CheckOEM (CS203fd);
  	if (ret != 0)
  	{
+                printf ("RFID_CheckOEM Error : %d\n", ret);
  		return 0;	
 	}
 	
@@ -4345,6 +4378,11 @@ void *run (void *fd)
 	
 // StopInv
 	ret = CS203DC_StopInventory (CS203fd);
+	if (ret != 0)
+	{
+		printf ("%s, CS203DC_StopInventory Failure %d\n", CS203fd->target_reader, ret);
+		exit (1);
+	}
 
 // Read TID and UserData
 	//CS203DC_ReadTid (CS203fd, tzTagID);
@@ -4359,6 +4397,11 @@ void *run (void *fd)
 	}
 // Close
 	ret = CS203DC_Close (CS203fd);
+	if (ret != 0)
+	{
+		printf ("%s, CS203DC_Close Failure %d\n", CS203fd->target_reader, ret);
+		exit (1);
+	}
 
 // Reboot CS203
 	//CS203DC_Reboot (CS203fd->ipv4addr, uport);
@@ -4385,16 +4428,16 @@ int main (int ac, char *av[])
 	int rc;
 	int cnt;
 
-    /*
-     * Process comand arguments, determine reader name
-     * and verbosity level.
-     */
+	/*
+	* Process comand arguments, determine reader name
+	* and verbosity level.
+	*/
 
 	system("/opt/rfid_power_off"); sleep(1);
 	system("/opt/rfid_power_on"); sleep(1);
 	setvbuf(stdout,NULL,_IOLBF,0);
 
-	printf ("CSL Demo Program v2.8.1.0\n");
+	printf ("CSL Demo Program v2.9.0\n");
 	if (ac < 2)
 	{
 		printf("\nUsage: %s [-conf filename] IPaddress [-tag] [-loop] [-country nn/nnn] [-freq_ch_no n] [-power nnn] [-dwellTime nnnn] [-tid_length n] [-user_length n] [-portconf filename] [-session s] [-sequence 0|1] [-target 0|1] [-toggle 0|1] [-algorithm a,p,p,p,p]\n", av[0]);
@@ -4449,164 +4492,6 @@ int main (int ac, char *av[])
 	printf("Consolidated line = %s\n", linebuf);
 	if (1) config_read0(linebuf, 0, CS203fd_first);
 	else if (0) conf_fromfile = config_read (ac, av, 0, CS203fd_first);
-	else {
-	//set default values
-	CS203fd_first->profile=1;			//20161025
-	CS203fd_first->power=300;
-	CS203fd_first->dwellTime=2000;			// Add Dwell Time 2014-05-15
-	CS203fd_first->num_dBank=0;				// Number of data bank after inventory  - 2015-08-21
-	CS203fd_first->tid_length=0;			// Add TID Data Length 2015-08-20	
-	CS203fd_first->user_length=0;			// Add User Data Length 2015-08-21		
-	CS203fd_first->multiport=0;
-	CS203fd_first->query_session=0;
-	CS203fd_first->query_target=0;
-	CS203fd_first->toggle=1;
-	CS203fd_first->sequenceMode=0;
-	CS203fd_first->Algorithm=1;	//dynamicQ
-	CS203fd_first->MaxQ=15;
-	CS203fd_first->StartQ=7;
-	CS203fd_first->MinQ=0;
-	CS203fd_first->ThreadholdMultipler=4;
-
-// new parameters
-	CS203fd_first->inventorymode = 0;
-	CS203fd_first->tagdelaycompactmode = 7;
-	CS203fd_first->retry = 0;
-	CS203fd_first->tagfocus = 0;
-	CS203fd_first->rflnagain = 1;
-	CS203fd_first->rfhighcompress = 1;
-	CS203fd_first->iflnagain  = 24;
-	CS203fd_first->agcgain = -6;
-	CS203fd_first->simpledisplay = 0;
-
-	// Check Command Line
-	cnt = 1;
-	while (cnt < ac)
-	{
-		if (av[cnt][0] == '-')
-		{
-			if (strcmp (&av[cnt][1], "conf") == 0)
-			{
-				conf_fromfile = 1;
-				conf_Init (av[cnt + 1], CS203fd_first);
-				break;
-			}
-			else if (strcmp (&av[cnt][1], "tag") == 0)
-			{
-				CS203fd_first->iConf_ReadTag = 1;
-			}
-			else if (strcmp (&av[cnt][1], "loop") == 0)
-			{
-				CS203fd_first->iConf_Forever = 1; // Test Forever
-			}
-			else if (strcmp (&av[cnt][1], "write") == 0)
-			{
-				CS203fd_first->iConf_WriteUser = 1;								
-			}
-			else if (strcmp (&av[cnt][1], "profile") == 0)
-			{
-				int profile;
-				profile = atoi (av[cnt + 1]);
-				CS203fd_first->profile=profile;
-			}
-			else if (strcmp (&av[cnt][1], "power") == 0)
-			{
-				int power;
-				power = atoi (av[cnt + 1]);
-				CS203fd_first->power=power;
-			}
-			else if (strcmp (&av[cnt][1], "dwellTime") == 0)
-			{
-				int dwellTime;
-				dwellTime = atoi (av[cnt + 1]);
-				CS203fd_first->dwellTime=dwellTime;
-			}
-			else if (strcmp (&av[cnt][1], "tid_length") == 0)
-			{
-				int tid_length;
-				tid_length = atoi (av[cnt + 1]);
-				CS203fd_first->tid_length=tid_length;
-			}			
-			else if (strcmp (&av[cnt][1], "user_length") == 0)
-			{
-				int user_length;
-				user_length = atoi (av[cnt + 1]);
-				CS203fd_first->user_length=user_length;
-			}						
-			else if (strcmp (&av[cnt][1], "portconf") == 0)
-			{
-				CS_MultiPortconf (av[cnt + 1],CS203fd_first);
-				CS203fd_first->multiport=1;
-			}
-			else if (strcmp (&av[cnt][1], "sequence") == 0)
-			{
-				CS203fd_first->sequenceMode=atoi (av[cnt + 1]);
-			}
-			else if (strcmp (&av[cnt][1], "country") == 0)
-			{
-				read_country_code (CS203fd_first, av[cnt+1]);
-			}
-			else if (strcmp (&av[cnt][1], "freq_ch_no") == 0)
-			{
-				CS203fd_first->iConf_channel = atoi (av[cnt + 1]);
-			}
-			else if (strcmp (&av[cnt][1], "session") == 0)
-			{
-				CS203fd_first->query_session = atoi (av[cnt + 1]);
-			}
-			else if (strcmp (&av[cnt][1], "target") == 0)
-			{
-				CS203fd_first->query_target = atoi (av[cnt + 1]);
-			}
-			else if (strcmp (&av[cnt][1], "toggle") == 0)
-			{
-				CS203fd_first->toggle= atoi (av[cnt + 1]);
-			}
-			else if (strcmp (&av[cnt][1], "algorithm") == 0)
-			{
-				char* pch;
-				pch = strtok (av[cnt+1],",");
-				if (atoi(pch) == 0)	//fixedQ
-				{
-					CS203fd_first->Algorithm=0;
-					CS203fd_first->QValue=atoi(strtok (NULL, ","));
-				}
-				else	//dynamicQ
-				{
-					CS203fd_first->Algorithm=1;
-					CS203fd_first->StartQ=atoi(strtok (NULL, ","));
-					CS203fd_first->MinQ=atoi(strtok (NULL, ","));
-					CS203fd_first->MaxQ=atoi(strtok (NULL, ","));
-					CS203fd_first->ThreadholdMultipler=atoi(strtok (NULL, ","));
-				}
-			}
-
-//new parameters
-			else if (strcmp (&av[cnt][1], "inventorymode") == 0) {		
-				if (strcmp (&av[cnt+1][0], "normal") == 0) CS203fd_first->inventorymode = 0;
-				else if (strcmp (&av[cnt+1][0], "compact") == 0) CS203fd_first->inventorymode = 1;
-			} else if (strcmp (&av[cnt][1], "tagdelaycompactmode") == 0) {
-				CS203fd_first->tagdelaycompactmode = atoi (av[cnt + 1]);
-			} else if (strcmp (&av[cnt][1], "retry") == 0) {
-				CS203fd_first->retry = atoi (av[cnt + 1]);
-			} else if (strcmp (&av[cnt][1], "tagfocus") == 0) {
-				CS203fd_first->tagfocus = atoi (av[cnt + 1]);
-			} else if (strcmp (&av[cnt][1], "rflnagain") == 0) {
-				CS203fd_first->rflnagain = atoi (av[cnt + 1]);
-			} else if (strcmp (&av[cnt][1], "rfhighcompress") == 0) {
-				CS203fd_first->rfhighcompress = atoi (av[cnt + 1]);
-			} else if (strcmp (&av[cnt][1], "iflnagain") == 0) {
-				CS203fd_first->iflnagain = atoi (av[cnt + 1]);
-			} else if (strcmp (&av[cnt][1], "agcgain") == 0) {
-				CS203fd_first->agcgain = atoi (av[cnt + 1]);
-			} else if (strcmp (&av[cnt][1], "simpledisplay") == 0) {
-				CS203fd_first->simpledisplay = atoi (av[cnt + 1]);
-			}
-		}
-
-		cnt ++;
-	}
-	}
 	
 	if (CS203fd_first->configFile[0] == 0) {
 		//strncpy (CS203fd_first->target_reader, av[1], 50 - 1);
@@ -4655,7 +4540,7 @@ int main (int ac, char *av[])
 	/*
     * Run application, capture return value for exit status
    */
-   CS203fd = CS203fd_first;
+        CS203fd = CS203fd_first;
 	while (CS203fd != NULL)
 	{
 		if ( CS203fd->rfid_reader_info )

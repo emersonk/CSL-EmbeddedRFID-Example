@@ -6,11 +6,11 @@
    -inventorymode compact
    -tagdelaycompactmode 0
    -target 0
-   -toggle 0
+   -toggle 1
    -algorithm 1,7,0,15,4 
-   -session 1
+   -session 0
    -retry 0
-   -tagfocus 1
+   -tagfocus 0
    -rflnagain 13
    -rfhighcompress 0
    -iflnagain 24

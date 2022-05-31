@@ -1,7 +1,8 @@
- 
+I 
    -tag
    -loop
-   -country FCC
+   -country ETSI
+   -freq_ch_no 1
    -profile 1  
    -inventorymode compact
    -tagdelaycompactmode 0
